@@ -18,7 +18,7 @@
 
 package org.apache.flink.runtime.concurrent;
 
-import org.apache.flink.api.common.time.Time;
+import java.time.Duration;
 
 /**
  * Interface that encapsulates retry logic.  An instances should be immutable.
@@ -32,7 +32,7 @@ public interface RetryStrategy {
 	/**
 	 * @return the current delay if we need to retry
 	 */
-	Time getRetryDelay();
+	Duration getRetryDelay();
 
 	/**
 	 * @return the next retry strategy to current delay if we need to retry

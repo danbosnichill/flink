@@ -18,10 +18,11 @@
 
 package org.apache.flink.runtime.concurrent;
 
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.util.TestLogger;
 
 import org.junit.Test;
+
+import java.time.Duration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,13 +33,13 @@ public class FixedRetryStrategyTest extends TestLogger {
 
 	@Test
 	public void testGetters() throws Exception {
-		RetryStrategy retryStrategy = new FixedRetryStrategy(10, Time.milliseconds(5L));
+		RetryStrategy retryStrategy = new FixedRetryStrategy(10, Duration.ofMillis(5L));
 		assertEquals(10, retryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(5L), retryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(5L), retryStrategy.getRetryDelay());
 
 		RetryStrategy nextRetryStrategy = retryStrategy.getNextRetryStrategy();
 		assertEquals(9, nextRetryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(5L), nextRetryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(5L), nextRetryStrategy.getRetryDelay());
 	}
 
 	/**
@@ -46,6 +47,6 @@ public class FixedRetryStrategyTest extends TestLogger {
 	 */
 	@Test(expected = IllegalStateException.class)
 	public void testRetryFailure() throws Throwable {
-		new FixedRetryStrategy(0, Time.milliseconds(5L)).getNextRetryStrategy();
+		new FixedRetryStrategy(0, Duration.ofMillis(5L)).getNextRetryStrategy();
 	}
 }

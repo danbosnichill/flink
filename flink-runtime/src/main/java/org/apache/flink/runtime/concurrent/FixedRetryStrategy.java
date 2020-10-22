@@ -18,24 +18,25 @@
 
 package org.apache.flink.runtime.concurrent;
 
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.util.Preconditions;
+
+import java.time.Duration;
 
 /**
  * An implementation of {@link RetryStrategy} that retries at a fixed delay.
  */
 public class FixedRetryStrategy implements RetryStrategy {
 	private final int remainingRetries;
-	private final Time retryDelay;
+	private final Duration retryDelay;
 
 	/**
 	 * @param remainingRetries number of times to retry
 	 * @param retryDelay delay between retries
 	 */
-	public FixedRetryStrategy(int remainingRetries, Time retryDelay) {
+	public FixedRetryStrategy(int remainingRetries, Duration retryDelay) {
 		Preconditions.checkArgument(remainingRetries >= 0, "The number of retries must be greater or equal to 0.");
 		this.remainingRetries = remainingRetries;
-		Preconditions.checkArgument(retryDelay.toMilliseconds() >= 0, "The retryDelay must be positive");
+		Preconditions.checkArgument(retryDelay.toMillis() >= 0, "The retryDelay must be positive");
 		this.retryDelay = retryDelay;
 	}
 
@@ -45,7 +46,7 @@ public class FixedRetryStrategy implements RetryStrategy {
 	}
 
 	@Override
-	public Time getRetryDelay() {
+	public Duration getRetryDelay() {
 		return retryDelay;
 	}
 

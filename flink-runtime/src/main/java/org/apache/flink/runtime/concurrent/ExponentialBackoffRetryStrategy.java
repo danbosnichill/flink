@@ -18,8 +18,9 @@
 
 package org.apache.flink.runtime.concurrent;
 
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.util.Preconditions;
+
+import java.time.Duration;
 
 /**
  * An implementation of {@link RetryStrategy} that retries that has an exponential backoff with
@@ -27,20 +28,20 @@ import org.apache.flink.util.Preconditions;
  */
 public class ExponentialBackoffRetryStrategy implements RetryStrategy {
 	private final int remainingRetries;
-	private final Time currentRetryDelay;
-	private final Time maxRetryDelay;
+	private final Duration currentRetryDelay;
+	private final Duration maxRetryDelay;
 
 	/**
 	 * @param remainingRetries number of times to retry
 	 * @param currentRetryDelay the current delay between retries
 	 * @param maxRetryDelay the max delay between retries
 	 */
-	public ExponentialBackoffRetryStrategy(int remainingRetries, Time currentRetryDelay, Time maxRetryDelay) {
+	public ExponentialBackoffRetryStrategy(int remainingRetries, Duration currentRetryDelay, Duration maxRetryDelay) {
 		Preconditions.checkArgument(remainingRetries >= 0, "The number of retries must be greater or equal to 0.");
 		this.remainingRetries = remainingRetries;
-		Preconditions.checkArgument(currentRetryDelay.toMilliseconds() >= 0, "The currentRetryDelay must be positive");
+		Preconditions.checkArgument(currentRetryDelay.toMillis() >= 0, "The currentRetryDelay must be positive");
 		this.currentRetryDelay = currentRetryDelay;
-		Preconditions.checkArgument(maxRetryDelay.toMilliseconds() >= 0, "The maxRetryDelay must be positive");
+		Preconditions.checkArgument(maxRetryDelay.toMillis() >= 0, "The maxRetryDelay must be positive");
 		this.maxRetryDelay = maxRetryDelay;
 	}
 
@@ -50,7 +51,7 @@ public class ExponentialBackoffRetryStrategy implements RetryStrategy {
 	}
 
 	@Override
-	public Time getRetryDelay() {
+	public Duration getRetryDelay() {
 		return currentRetryDelay;
 	}
 
@@ -58,7 +59,7 @@ public class ExponentialBackoffRetryStrategy implements RetryStrategy {
 	public RetryStrategy getNextRetryStrategy() {
 		int nextRemainingRetries = remainingRetries - 1;
 		Preconditions.checkState(nextRemainingRetries >= 0, "The number of remaining retries must not be negative");
-		long nextRetryDelayMillis = Math.min(2 * currentRetryDelay.toMilliseconds(), maxRetryDelay.toMilliseconds());
-		return new ExponentialBackoffRetryStrategy(nextRemainingRetries, Time.milliseconds(nextRetryDelayMillis), maxRetryDelay);
+		long nextRetryDelayMillis = Math.min(2 * currentRetryDelay.toMillis(), maxRetryDelay.toMillis());
+		return new ExponentialBackoffRetryStrategy(nextRemainingRetries, Duration.ofMillis(nextRetryDelayMillis), maxRetryDelay);
 	}
 }

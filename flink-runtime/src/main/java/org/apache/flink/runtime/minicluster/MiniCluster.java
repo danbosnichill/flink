@@ -97,6 +97,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -340,12 +341,12 @@ public class MiniCluster implements AutoCloseableAsync {
 					commonRpcService,
 					DispatcherGateway.class,
 					DispatcherId::fromUuid,
-					new ExponentialBackoffRetryStrategy(21, Time.milliseconds(5L), Time.milliseconds(20L)));
+					new ExponentialBackoffRetryStrategy(21, Duration.ofMillis(5L), Duration.ofMillis(20L)));
 				resourceManagerGatewayRetriever = new RpcGatewayRetriever<>(
 					commonRpcService,
 					ResourceManagerGateway.class,
 					ResourceManagerId::fromUuid,
-					new ExponentialBackoffRetryStrategy(21, Time.milliseconds(5L), Time.milliseconds(20L)));
+					new ExponentialBackoffRetryStrategy(21, Duration.ofMillis(5L), Duration.ofMillis(20L)));
 				webMonitorLeaderRetriever = new LeaderRetriever();
 
 				resourceManagerLeaderRetriever.start(resourceManagerGatewayRetriever);

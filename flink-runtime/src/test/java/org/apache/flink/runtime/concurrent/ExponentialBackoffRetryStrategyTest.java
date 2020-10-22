@@ -18,10 +18,11 @@
 
 package org.apache.flink.runtime.concurrent;
 
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.util.TestLogger;
 
 import org.junit.Test;
+
+import java.time.Duration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,35 +33,35 @@ public class ExponentialBackoffRetryStrategyTest extends TestLogger {
 
 	@Test
 	public void testGettersNotCapped() throws Exception {
-		RetryStrategy retryStrategy = new ExponentialBackoffRetryStrategy(10, Time.milliseconds(5L), Time.milliseconds(20L));
+		RetryStrategy retryStrategy = new ExponentialBackoffRetryStrategy(10, Duration.ofMillis(5L), Duration.ofMillis(20L));
 		assertEquals(10, retryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(5L), retryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(5L), retryStrategy.getRetryDelay());
 
 		RetryStrategy nextRetryStrategy = retryStrategy.getNextRetryStrategy();
 		assertEquals(9, nextRetryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(10L), nextRetryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(10L), nextRetryStrategy.getRetryDelay());
 	}
 
 	@Test
 	public void testGettersHitCapped() throws Exception {
-		RetryStrategy retryStrategy = new ExponentialBackoffRetryStrategy(5, Time.milliseconds(15L), Time.milliseconds(20L));
+		RetryStrategy retryStrategy = new ExponentialBackoffRetryStrategy(5, Duration.ofMillis(15L), Duration.ofMillis(20L));
 		assertEquals(5, retryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(15L), retryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(15L), retryStrategy.getRetryDelay());
 
 		RetryStrategy nextRetryStrategy = retryStrategy.getNextRetryStrategy();
 		assertEquals(4, nextRetryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(20L), nextRetryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(20L), nextRetryStrategy.getRetryDelay());
 	}
 
 	@Test
 	public void testGettersAtCap() throws Exception {
-		RetryStrategy retryStrategy = new ExponentialBackoffRetryStrategy(5, Time.milliseconds(20L), Time.milliseconds(20L));
+		RetryStrategy retryStrategy = new ExponentialBackoffRetryStrategy(5, Duration.ofMillis(20L), Duration.ofMillis(20L));
 		assertEquals(5, retryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(20L), retryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(20L), retryStrategy.getRetryDelay());
 
 		RetryStrategy nextRetryStrategy = retryStrategy.getNextRetryStrategy();
 		assertEquals(4, nextRetryStrategy.getNumRemainingRetries());
-		assertEquals(Time.milliseconds(20L), nextRetryStrategy.getRetryDelay());
+		assertEquals(Duration.ofMillis(20L), nextRetryStrategy.getRetryDelay());
 	}
 
 	/**
@@ -68,6 +69,6 @@ public class ExponentialBackoffRetryStrategyTest extends TestLogger {
 	 */
 	@Test(expected = IllegalStateException.class)
 	public void testRetryFailure() throws Throwable {
-		new ExponentialBackoffRetryStrategy(0, Time.milliseconds(20L), Time.milliseconds(20L)).getNextRetryStrategy();
+		new ExponentialBackoffRetryStrategy(0, Duration.ofMillis(20L), Duration.ofMillis(20L)).getNextRetryStrategy();
 	}
 }

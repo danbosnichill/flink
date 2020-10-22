@@ -29,6 +29,7 @@ import org.apache.flink.util.TestLogger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -184,7 +185,7 @@ public class FutureUtilsTest extends TestLogger {
 	public void testRetryWithDelayRetryStrategyFailure() throws Throwable {
 		CompletableFuture<?> retryFuture = FutureUtils.retryWithDelay(
 				() -> FutureUtils.completedExceptionally(new FlinkException("Test exception")),
-				new FixedRetryStrategy(3, Time.milliseconds(1L)),
+				new FixedRetryStrategy(3, Duration.ofMillis(1L)),
 				TestingUtils.defaultScheduledExecutor());
 
 		try {
@@ -244,7 +245,7 @@ public class FutureUtilsTest extends TestLogger {
 						return FutureUtils.completedExceptionally(new FlinkException("Test exception."));
 					}
 				},
-				new ExponentialBackoffRetryStrategy(retries, Time.milliseconds(2L), Time.milliseconds(5L)),
+				new ExponentialBackoffRetryStrategy(retries, Duration.ofMillis(2L), Duration.ofMillis(5L)),
 				TestingUtils.defaultScheduledExecutor());
 
 		Boolean result = retryFuture.get();

@@ -181,7 +181,7 @@ public class FutureUtils {
 			final ScheduledExecutor scheduledExecutor) {
 		return retryWithDelay(
 				operation,
-				new FixedRetryStrategy(retries, retryDelay),
+				new FixedRetryStrategy(retries, Duration.ofMillis(retryDelay.toMilliseconds())),
 				retryPredicate,
 				scheduledExecutor);
 	}
@@ -231,7 +231,7 @@ public class FutureUtils {
 			final ScheduledExecutor scheduledExecutor) {
 		return retryWithDelay(
 				operation,
-				new FixedRetryStrategy(retries, retryDelay),
+				new FixedRetryStrategy(retries, Duration.ofMillis(retryDelay.toMilliseconds())),
 				scheduledExecutor);
 	}
 
@@ -330,7 +330,7 @@ public class FutureUtils {
 							if (!retryPredicate.test(throwable)) {
 								resultFuture.completeExceptionally(throwable);
 							} else if (retryStrategy.getNumRemainingRetries() > 0) {
-								long retryDelayMillis = retryStrategy.getRetryDelay().toMilliseconds();
+								long retryDelayMillis = retryStrategy.getRetryDelay().toMillis();
 								final ScheduledFuture<?> scheduledFuture = scheduledExecutor.schedule(
 									(Runnable) () -> retryOperationWithDelay(resultFuture, operation, retryStrategy.getNextRetryStrategy(), retryPredicate, scheduledExecutor),
 									retryDelayMillis,
